@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: voteit.feed 0.1dev\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-04-23 11:46+0200\n"
+"POT-Creation-Date: 2012-04-24 11:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,6 +19,26 @@ msgstr ""
 
 #: voteit/feed/models.py:51
 msgid "Feed entry"
+msgstr ""
+
+#: voteit/feed/schemas.py:15
+msgid "Activate RSS feed"
+msgstr ""
+
+#. Default: When the checkbox below is checked your meeting will be able to show a
+#. public RSS feed that can be followed with a RSS reader. This feed will contain
+#. info about when changes are made in the meeting and who did the changes. You can
+#. access the feed on: 'The meeting URL' + '/feed'. This should be something like
+#. 'www.yourdomain.com/yourmeetingname/feed'. If you want the feed to show up in an
+#. iframe you can use '/framefeed' instead. This is an advanced feature and read
+#. more about it in the manual on wiki.voteit.se. Please note a word of warning:
+#. the feed is public for all who can figure it out.
+#: voteit/feed/schemas.py:16
+msgid "rss_feed_checkbox_description"
+msgstr ""
+
+#: voteit/feed/schemas.py:22 voteit/feed/views.py:129
+msgid "RSS settings"
 msgstr ""
 
 #: voteit/feed/subscribers.py:33
@@ -49,8 +69,16 @@ msgstr ""
 msgid "${agenda_item} has been closed."
 msgstr ""
 
-#: voteit/feed/views.py:71
+#: voteit/feed/views.py:81
 msgid "This RSS-feed isn't enabled."
+msgstr ""
+
+#: voteit/feed/views.py:117
+msgid "Canceled"
+msgstr ""
+
+#: voteit/feed/views.py:137
+msgid "RSS feed"
 msgstr ""
 
 #: voteit/feed/templates/meeting_framefeed.pt:24
