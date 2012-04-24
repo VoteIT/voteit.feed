@@ -1,6 +1,7 @@
 import unittest
 
 from pyramid import testing
+from pyramid.httpexceptions import HTTPForbidden
 
 from voteit.feed.interfaces import IFeedHandler
 
@@ -67,3 +68,71 @@ class FeedViewTests(unittest.TestCase):
         self.assertEqual(res['active'], True)
         self.assertEqual(len(res['entries']), 2)
 
+    def test_rss_settings(self):
+        root = self._fixture()
+        obj = self._cut(root['m'], self.request)
+        res = obj.rss_settings()
+        self.assertIn("Activate RSS feed", res['form'])
+
+    def test_rss_settings_post_without_ajax(self):
+        root = self._fixture()
+        request = testing.DummyRequest(post = {'save': 'save', '__formid__': 'deform'},
+                                       is_xhr = False)
+        obj = self._cut(root['m'], request)
+        res = obj.rss_settings()
+        self.assertEqual(res.status, '302 Found')
+        self.assertEqual(res.location, 'http://example.com/m/')
+        self.assertEqual(root['m'].get_field_value('rss_feed'), False)
+
+    def test_rss_settings_post_with_ajax(self):
+        root = self._fixture()
+        request = testing.DummyRequest(post = {'save': 'save', '__formid__': 'deform'},
+                                       is_xhr = True)
+        obj = self._cut(root['m'], request)
+        res = obj.rss_settings()
+        self.assertEqual(res.headers['X-Relocate'], 'http://example.com/m/')
+        self.assertEqual(root['m'].get_field_value('rss_feed'), False)
+
+    def test_rss_settings_validation_error(self):
+        root = self._fixture()
+        # Since the session with csrf tokens isn't initiatet, it will be '' as default
+        # - hence causing a validation failiure here
+        postdata = {'save': 'save', 'csrf_token': 'bad_token', '__formid__': 'deform'}
+        request = testing.DummyRequest(post = postdata,
+                                       is_xhr = False)
+        obj = self._cut(root['m'], request)
+        self.assertRaises(HTTPForbidden, obj.rss_settings)
+        # and with ajax
+        request = testing.DummyRequest(post = postdata,
+                                       is_xhr = True)
+        obj = self._cut(root['m'], request)
+        self.assertRaises(HTTPForbidden, obj.rss_settings)
+
+    def test_rss_settings_cancel(self):
+        self.config.include('voteit.core.models.flash_messages')
+        root = self._fixture()
+        postdata = {'cancel': 'cancel', '__formid__': 'deform'}
+        request = testing.DummyRequest(post = postdata,
+                                       is_xhr = False)
+        obj = self._cut(root['m'], request)
+        res = obj.rss_settings()
+        self.assertEqual(res.status, '302 Found')
+        # and with ajax
+        request = testing.DummyRequest(post = postdata,
+                                       is_xhr = True)
+        obj = self._cut(root['m'], request)
+        res = obj.rss_settings()
+        self.assertEqual(res.headers['X-Relocate'], 'http://example.com/m/')
+
+
+
+#class FeedViewComponentTests(unittest.TestCase):
+#
+#    def setUp(self):
+#        self.request = testing.DummyRequest()
+#        self.config = testing.setUp(request=self.request)
+#        self.config.testing_securitypolicy(userid='admin',
+#                                           permissive=True)
+#
+#    def tearDown(self):
+#        testing.tearDown()

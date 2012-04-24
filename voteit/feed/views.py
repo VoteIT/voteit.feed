@@ -2,6 +2,7 @@ import pytz
 
 import colander
 from deform import Form
+from deform import ValidationFailure
 from betahaus.viewcomponent import view_action
 from betahaus.pyracont.factories import createSchema
 from pyramid.renderers import render
@@ -10,6 +11,7 @@ from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.traversal import find_resource
 from pyramid.url import resource_url
 from pyramid.view import view_config
+from pyramid.httpexceptions import HTTPFound
 
 from voteit.core import fanstaticlib
 from voteit.core import security
@@ -97,11 +99,10 @@ class FeedView(BaseView):
             controls = post.items()
             try:
                 appstruct = form.validate(controls)
-            except ValidationFailure, e:
+            except ValidationFailure, e: # pragma : no cover - there's no invalid data for bools.
                 self.response['form'] = e.render()
                 if self.request.is_xhr:
-                    return Response(render("templates/ajax_edit.pt", self.response, request = self.request))
-                
+                    return Response(render("voteit.core.views:templates/ajax_edit.pt", self.response, request = self.request))
                 return self.response
             
             self.context.set_field_appstruct(appstruct)
@@ -111,7 +112,6 @@ class FeedView(BaseView):
                 return Response(headers = [('X-Relocate', url)])
             return HTTPFound(location=url)
 
-        #FIXME: with ajax post this does not work no, we'll need to fix this
         if 'cancel' in post:
             self.api.flash_messages.add(_(u"Canceled"))
 
