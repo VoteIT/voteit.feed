@@ -61,13 +61,3 @@ class FeedEntry(Persistent):
         self.context_uid = context_uid
         self.message = message
         self.tags = tuple(tags)
-
-
-def includeme(config):
-    """ Include to register FeedHandler adapter.
-        like: config.include('voteit.core.models.feeds')
-        FeedEntry will be picked up by the regular scan()-method.
-    """
-    config.registry.registerAdapter(FeedHandler, (IMeeting,), IFeedHandler)
-
-        

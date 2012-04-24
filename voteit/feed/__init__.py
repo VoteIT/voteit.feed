@@ -4,10 +4,9 @@ FeedMF = TranslationStringFactory('voteit.feed')
 
 
 def includeme(config):
-    """ Include Site adapter and register views."""
+    """ Include feed adapter, register views and content factories."""
     config.scan('voteit.feed')
     config.add_translation_dirs('voteit.feed:locale/')
-    
     from voteit.core.models.interfaces import IMeeting
     from voteit.feed.interfaces import IFeedHandler
     from voteit.feed.models import FeedHandler

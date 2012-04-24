@@ -26,25 +26,20 @@ class FeedHandlerTests(unittest.TestCase):
         context = Meeting()
         return FeedHandler(context)
 
-    def _register_feed_entry_factory(self):
-        #FIXME: Detach more?
-        self.config.scan('voteit.feed.models')
-
     def test_interface(self):
         obj = self._make_adapted_obj()
         self.assertTrue(verifyObject(IFeedHandler, obj))
 
     def test_add(self):
-        self._register_feed_entry_factory()
+        self.config.include('voteit.feed')
         obj = self._make_adapted_obj()
         obj.add('context_uid', 'message')
-        
         self.assertEqual(len(obj.feed_storage), 1)
         self.assertEqual(obj.feed_storage[0].context_uid, 'context_uid')
         self.assertEqual(obj.feed_storage[0].message, 'message')
 
     def test_registration_on_include(self):
-        self.config.include('voteit.feed.models')
+        self.config.include('voteit.feed')
         from voteit.core.models.meeting import Meeting
         meeting = Meeting()
         adapter = self.config.registry.queryAdapter(meeting, IFeedHandler)
