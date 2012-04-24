@@ -140,7 +140,6 @@ def feed_menu_link(context, request, va, **kw):
     url = api.resource_url(api.meeting, request) + va.kwargs['link']
     if api.meeting.get_field_value('rss_feed', False):
         return """<li><a href="%s">%s</a></li>""" % (url, api.translate(va.title))
-    
     return ''
 
 @view_action('head', 'feed')
@@ -148,5 +147,4 @@ def feed_head_link(context, request, va, **kw):
     api = kw['api']
     if api.meeting and api.meeting.get_field_value('rss_feed', False): 
         return '<link rel="alternate" type="application/rss+xml" title="%s" href="%sfeed">' %  (api.meeting.title, api.resource_url(api.meeting, api.request))
-    else:
-        return ''
+    return ''

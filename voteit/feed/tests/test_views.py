@@ -125,7 +125,6 @@ class FeedViewTests(unittest.TestCase):
         self.assertEqual(res.headers['X-Relocate'], 'http://example.com/m/')
 
 
-
 #class FeedViewComponentTests(unittest.TestCase):
 #
 #    def setUp(self):
@@ -136,3 +135,4 @@ class FeedViewTests(unittest.TestCase):
 #
 #    def tearDown(self):
 #        testing.tearDown()
+
