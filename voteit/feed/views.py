@@ -31,19 +31,20 @@ class FeedView(BaseView):
     @view_config(context=IMeeting, name='feed', permission=NO_PERMISSION_REQUIRED)
     def feed(self):
         """ Renders a rss feed for the meeting """
-        
         return Response(render("templates/meeting_feed.xml", self._get_feed(), request = self.request), content_type='application/rss+xml') 
     
     @view_config(context=IMeeting, name='framefeed', renderer="templates/meeting_framefeed.pt", permission=NO_PERMISSION_REQUIRED)
     def framefeed(self):
         """ Renders a html feed for the meeting """
         voteit_feed.need()
-        
         return self._get_feed()
           
     def _get_feed(self):
         ''' Makes a respone dict for renderers '''
         def _get_url(entry):
+            """ If something stored in the database is deleted,
+                the query won't return any object since that UID won't exist.
+            """
             brains = self.api.get_metadata_for_query(uid=entry.context_uid)
             if brains:
                 resource = find_resource(self.api.root, brains[0]['path'])
@@ -52,10 +53,6 @@ class FeedView(BaseView):
         
         # Borrowed from PyRSS2Gen, thanks for this workaround
         def _format_date(dt):
-            # added to convert the datetime to GTM timezone
-            tz = pytz.timezone('GMT')
-            dt = tz.normalize(dt.astimezone(tz))
-            
             """convert a datetime into an RFC 822 formatted date
         
             Input date must be in GMT.
@@ -67,6 +64,8 @@ class FeedView(BaseView):
             # Isn't there a standard way to do this for Python?  The
             # rfc822 and email.Utils modules assume a timestamp.  The
             # following is based on the rfc822 module.
+            tz = pytz.timezone('GMT')
+            dt = tz.normalize(dt.astimezone(tz))
             return "%s, %02d %s %04d %02d:%02d:%02d GMT" % (
                     ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][dt.weekday()],
                     dt.day,
@@ -125,7 +124,7 @@ class FeedView(BaseView):
         appstruct = self.context.get_field_appstruct(schema)
         self.response['form'] = form.render(appstruct)
         return self.response
-    
+
 @view_action('settings_menu', 'rss_settings', title = _(u"RSS settings"), link = "@@rss_settings", permission = security.MODERATE_MEETING)
 def generic_menu_link(context, request, va, **kw):
     """ This is for simple menu items for the meeting root """
