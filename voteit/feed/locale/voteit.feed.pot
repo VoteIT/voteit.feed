@@ -1,0 +1,59 @@
+# Translations template for voteit.feed.
+# Copyright (C) 2012 ORGANIZATION
+# This file is distributed under the same license as the voteit.feed project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: voteit.feed 0.1dev\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2012-04-23 11:46+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 0.9.6\n"
+
+#: voteit/feed/models.py:51
+msgid "Feed entry"
+msgstr ""
+
+#: voteit/feed/subscribers.py:33
+msgid "${userid} has written a post in ${agenda_item}."
+msgstr ""
+
+#: voteit/feed/subscribers.py:52
+msgid "${userid} has made a proposal in ${agenda_item}."
+msgstr ""
+
+#: voteit/feed/subscribers.py:72
+msgid "A poll has started in ${agenda_item}, vote now!"
+msgstr ""
+
+#: voteit/feed/subscribers.py:75
+msgid "The result of a poll in ${agenda_item} is set."
+msgstr ""
+
+#: voteit/feed/subscribers.py:92
+msgid "${agenda_item} has been added to the agenda."
+msgstr ""
+
+#: voteit/feed/subscribers.py:95
+msgid "${agenda_item} has been set to ongoing."
+msgstr ""
+
+#: voteit/feed/subscribers.py:98
+msgid "${agenda_item} has been closed."
+msgstr ""
+
+#: voteit/feed/views.py:71
+msgid "This RSS-feed isn't enabled."
+msgstr ""
+
+#: voteit/feed/templates/meeting_framefeed.pt:24
+msgid "Feed not active"
+msgstr ""
+
