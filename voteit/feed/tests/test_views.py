@@ -125,14 +125,69 @@ class FeedViewTests(unittest.TestCase):
         self.assertEqual(res.headers['X-Relocate'], 'http://example.com/m/')
 
 
-#class FeedViewComponentTests(unittest.TestCase):
-#
-#    def setUp(self):
-#        self.request = testing.DummyRequest()
-#        self.config = testing.setUp(request=self.request)
-#        self.config.testing_securitypolicy(userid='admin',
-#                                           permissive=True)
-#
-#    def tearDown(self):
-#        testing.tearDown()
+class FeedViewComponentTests(unittest.TestCase):
 
+    def setUp(self):
+        self.request = testing.DummyRequest()
+        self.config = testing.setUp(request=self.request)
+        self.config.testing_securitypolicy(userid='admin',
+                                           permissive=True)
+
+    def tearDown(self):
+        testing.tearDown()
+        
+    def _fixture(self):
+        from voteit.core.testing_helpers import bootstrap_and_fixture
+        from voteit.core.testing_helpers import register_catalog
+        from voteit.core.models.meeting import Meeting
+        from voteit.core.models.agenda_item import AgendaItem
+        from voteit.core.models.discussion_post import DiscussionPost
+        self.config.include('voteit.feed')
+        self.config.registry.settings['default_timezone_name'] = "Europe/Stockholm"
+        self.config.include('voteit.core.models.date_time_util')
+        register_catalog(self.config)
+        root = bootstrap_and_fixture(self.config)
+        root['m'] = Meeting()
+        root['m'].set_field_value('rss_feed', True)
+        root['m']['ai'] = AgendaItem()
+        root['m']['ai'].set_workflow_state(self.request, 'upcoming')
+        root['m']['ai']['dp'] = DiscussionPost()
+        return root
+    
+    def _api(self, context=None):
+        from voteit.core.views.api import APIView
+        context = context and context or testing.DummyResource()
+        request = testing.DummyRequest()
+        return APIView(context, request)
+    
+    def _va(self, title, link):
+        class ViewAction():
+            def __init__(self, title, link):
+                self. title = title
+                self.kwargs = {'link': link, }
+        return ViewAction(title, link) 
+    
+    def test_generic_menu_link(self):
+        root = self._fixture()
+        va = self._va(title = "RSS settings", link = "@@rss_settings")
+        api = self._api(root['m'])
+        from voteit.feed.views import generic_menu_link
+        res = generic_menu_link(root['m'], api.request, va, api = api)
+        self.assertEqual(res, '<li><a href="http://example.com/m/@@rss_settings">RSS settings</a></li>')
+        
+    def test_feed_menu_link(self):
+        root = self._fixture()
+        va = self._va(title = "RSS feed", link = "feed")
+        api = self._api(root['m'])
+        from voteit.feed.views import feed_menu_link
+        res = feed_menu_link(root['m'], api.request, va, api = api)
+        self.assertEqual(res, '<li><a href="http://example.com/m/feed">RSS feed</a></li>')
+        
+    def test_feed_head_link(self):
+        root = self._fixture()
+        va = self._va(title = "RSS feed", link = "feed")
+        api = self._api(root['m'])
+        root['m'].title = 'Dummy'
+        from voteit.feed.views import feed_head_link
+        res = feed_head_link(root['m'], api.request, va, api = api)
+        self.assertEqual(res, '<link rel="alternate" type="application/rss+xml" title="Dummy" href="http://example.com/m/feed">')
