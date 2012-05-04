@@ -33,9 +33,10 @@ class FeedHandler(object):
             return self.context.__feed_storage__
     
     def _next_free_key(self):
-        if len(self.feed_storage) == 0:
+        try:
+            return self.feed_storage.maxKey()+1
+        except ValueError: #Emptry tree
             return 0
-        return self.feed_storage.maxKey()+1
     
     def add(self, context_uid, message, tags=(), context=None):
         obj = createContent('FeedEntry', context_uid, message, tags=tags)
