@@ -125,7 +125,7 @@ class FeedView(BaseView):
         self.response['form'] = form.render(appstruct)
         return self.response
 
-@view_action('settings_menu', 'rss_settings', title = _(u"RSS settings"), link = "@@rss_settings", permission = security.MODERATE_MEETING)
+@view_action('settings_menu', 'rss_settings', title = _(u"RSS settings"), link = "rss_settings", permission = security.MODERATE_MEETING)
 def generic_menu_link(context, request, va, **kw):
     """ This is for simple menu items for the meeting root """
     api = kw['api']
