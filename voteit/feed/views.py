@@ -89,7 +89,6 @@ class FeedView(BaseView):
     def rss_settings(self):
         schema = createSchema("RssSettingsMeetingSchema").bind(context=self.context, request=self.request)
         add_csrf_token(self.context, self.request, schema)
-            
         form = Form(schema, buttons=(button_save, button_cancel), use_ajax=True, ajax_options=ajax_options)
         self.api.register_form_resources(form)
         fanstaticlib.jquery_form.need()
@@ -99,7 +98,7 @@ class FeedView(BaseView):
             controls = post.items()
             try:
                 appstruct = form.validate(controls)
-            except ValidationFailure, e: # pragma : no cover - there's no invalid data for bools.
+            except ValidationFailure, e:
                 self.response['form'] = e.render()
                 if self.request.is_xhr:
                     return Response(render("voteit.core.views:templates/ajax_edit.pt", self.response, request = self.request))

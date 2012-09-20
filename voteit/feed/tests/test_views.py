@@ -102,7 +102,10 @@ class FeedViewTests(unittest.TestCase):
                                        is_xhr = False)
         obj = self._cut(root['m'], request)
         self.assertRaises(HTTPForbidden, obj.rss_settings)
-        # and with ajax
+
+    def test_rss_settings_validation_error_ajax(self):
+        root = self._fixture()
+        postdata = {'save': 'save', 'csrf_token': 'bad_token', '__formid__': 'deform'}
         request = testing.DummyRequest(post = postdata,
                                        is_xhr = True)
         obj = self._cut(root['m'], request)
