@@ -93,21 +93,6 @@ class FeedViewTests(unittest.TestCase):
         self.assertEqual(res.headers['X-Relocate'], 'http://example.com/m/')
         self.assertEqual(root['m'].get_field_value('rss_feed'), False)
 
-    def test_rss_settings_validation_error(self):
-        root = self._fixture()
-        # Since the session with csrf tokens isn't initiatet, it will be '' as default
-        # - hence causing a validation failiure here
-        postdata = {'save': 'save', 'csrf_token': 'bad_token', '__formid__': 'deform'}
-        request = testing.DummyRequest(post = postdata,
-                                       is_xhr = False)
-        obj = self._cut(root['m'], request)
-        self.assertRaises(HTTPForbidden, obj.rss_settings)
-        # and with ajax
-        request = testing.DummyRequest(post = postdata,
-                                       is_xhr = True)
-        obj = self._cut(root['m'], request)
-        self.assertRaises(HTTPForbidden, obj.rss_settings)
-
     def test_rss_settings_cancel(self):
         self.config.include('voteit.core.models.flash_messages')
         root = self._fixture()
