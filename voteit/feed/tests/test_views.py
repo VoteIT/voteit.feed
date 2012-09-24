@@ -92,7 +92,7 @@ class FeedViewTests(unittest.TestCase):
         res = obj.rss_settings()
         self.assertEqual(res.headers['X-Relocate'], 'http://example.com/m/')
         self.assertEqual(root['m'].get_field_value('rss_feed'), False)
-
+        
     def test_rss_settings_cancel(self):
         self.config.include('voteit.core.models.flash_messages')
         root = self._fixture()
@@ -154,11 +154,11 @@ class FeedViewComponentTests(unittest.TestCase):
     
     def test_generic_menu_link(self):
         root = self._fixture()
-        va = self._va(title = "RSS settings", link = "@@rss_settings")
+        va = self._va(title = "RSS settings", link = "rss_settings")
         api = self._api(root['m'])
         from voteit.feed.views import generic_menu_link
         res = generic_menu_link(root['m'], api.request, va, api = api)
-        self.assertEqual(res, '<li><a href="http://example.com/m/@@rss_settings">RSS settings</a></li>')
+        self.assertEqual(res, '<li><a href="http://example.com/m/rss_settings">RSS settings</a></li>')
         
     def test_feed_menu_link(self):
         root = self._fixture()
