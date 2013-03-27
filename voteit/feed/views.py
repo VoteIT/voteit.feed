@@ -1,6 +1,5 @@
 import pytz
 
-import colander
 from deform import Form
 from deform import ValidationFailure
 from betahaus.viewcomponent import view_action
@@ -9,16 +8,13 @@ from pyramid.renderers import render
 from pyramid.response import Response
 from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.traversal import find_resource
-from pyramid.url import resource_url
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 
 from voteit.core import fanstaticlib
 from voteit.core import security
-from voteit.core.helpers import ajax_options
-from voteit.core.models.interfaces import IAgendaItem
 from voteit.core.models.interfaces import IMeeting
-from voteit.core.models.schemas import add_csrf_token
+from voteit.core.schemas.common import add_csrf_token
 from voteit.core.models.schemas import button_save
 from voteit.core.models.schemas import button_cancel
 from voteit.core.views.base_view import BaseView
@@ -50,8 +46,8 @@ class FeedView(BaseView):
             brains = self.api.get_metadata_for_query(uid=entry.context_uid)
             if brains:
                 resource = find_resource(self.api.root, brains[0]['path'])
-                return resource_url(resource, self.request)
-            return resource_url(self.api.meeting, self.request)
+                return self.request.resource_url(resource)
+            return self.request.resource_url(self.api.meeting)
         
         # Borrowed from PyRSS2Gen, thanks for this workaround
         def _format_date(dt):
@@ -78,7 +74,7 @@ class FeedView(BaseView):
         feed_handler = self.request.registry.getAdapter(self.context, IFeedHandler)
         self.response['entries'] = feed_handler.feed_storage.values()
         self.response['format_date'] = _format_date
-        self.response['active'] = self.context.get_field_value('rss_feed', False);
+        self.response['active'] = self.context.get_field_value('rss_feed', False)
         self.response['feed_not_active_notice'] = self.api.translate(_(u"This RSS-feed isn't enabled."))
         # only show entries when meeting is ongoing
         self.response['closed'] = self.context.get_workflow_state() == 'closed'
@@ -87,9 +83,10 @@ class FeedView(BaseView):
     
     @view_config(context=IMeeting, name="rss_settings", renderer="voteit.core.views:templates/base_edit.pt", permission=security.EDIT)
     def rss_settings(self):
-        schema = createSchema("RssSettingsMeetingSchema").bind(context=self.context, request=self.request)
+        schema = createSchema("RssSettingsMeetingSchema")
         add_csrf_token(self.context, self.request, schema)
-        form = Form(schema, buttons=(button_save, button_cancel), use_ajax=True, ajax_options=ajax_options)
+        schema = schema.bind(context=self.context, request=self.request, api = self.api)
+        form = Form(schema, buttons=(button_save, button_cancel))
         self.api.register_form_resources(form)
         fanstaticlib.jquery_form.need()
 
@@ -100,25 +97,14 @@ class FeedView(BaseView):
                 appstruct = form.validate(controls)
             except ValidationFailure, e:
                 self.response['form'] = e.render()
-                if self.request.is_xhr:
-                    return Response(render("voteit.core.views:templates/ajax_edit.pt", self.response, request = self.request))
                 return self.response
-            
             self.context.set_field_appstruct(appstruct)
-            
-            url = resource_url(self.context, self.request)
-            if self.request.is_xhr:
-                return Response(headers = [('X-Relocate', url)])
+            url = self.request.resource_url(self.context)
             return HTTPFound(location=url)
-
         if 'cancel' in post:
             self.api.flash_messages.add(_(u"Canceled"))
-
-            url = resource_url(self.context, self.request)
-            if self.request.is_xhr:
-                return Response(headers = [('X-Relocate', url)])
+            url = self.request.resource_url(self.context)
             return HTTPFound(location=url)
-
         #No action - Render form
         appstruct = self.context.get_field_appstruct(schema)
         self.response['form'] = form.render(appstruct)
@@ -130,13 +116,12 @@ def generic_menu_link(context, request, va, **kw):
     api = kw['api']
     url = "%s%s" % (api.meeting_url, va.kwargs['link'])
     return """<li><a href="%s">%s</a></li>""" % (url, api.translate(va.title))
-
     
 @view_action('meeting', 'feed', title = _(u"RSS feed"), link = "feed", )
 def feed_menu_link(context, request, va, **kw):
     """ This is for simple menu items for the meeting root """
     api = kw['api']
-    url = api.resource_url(api.meeting, request) + va.kwargs['link']
+    url = request.resource_url(api.meeting, va.kwargs['link'])
     if api.meeting.get_field_value('rss_feed', False):
         return """<li><a href="%s">%s</a></li>""" % (url, api.translate(va.title))
     return '' # pragma : no coverage
@@ -145,5 +130,5 @@ def feed_menu_link(context, request, va, **kw):
 def feed_head_link(context, request, va, **kw):
     api = kw['api']
     if api.meeting and api.meeting.get_field_value('rss_feed', False): 
-        return '<link rel="alternate" type="application/rss+xml" title="%s" href="%sfeed">' %  (api.meeting.title, api.resource_url(api.meeting, api.request))
+        return '<link rel="alternate" type="application/rss+xml" title="%s" href="%sfeed">' %  (api.meeting.title, request.resource_url(api.meeting))
     return '' # pragma : no coverage

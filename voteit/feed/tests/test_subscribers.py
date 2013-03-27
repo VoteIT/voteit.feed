@@ -1,10 +1,6 @@
 from unittest import TestCase
 
 from pyramid import testing
-from repoze.folder.events import ObjectAddedEvent
-from zope.component.event import objectEventNotify
-
-from voteit.core.events import ObjectUpdatedEvent
 from voteit.core.testing_helpers import register_workflows
 from voteit.core.testing_helpers import bootstrap_and_fixture
 

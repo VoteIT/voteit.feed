@@ -1,9 +1,6 @@
 import unittest
 
 from pyramid import testing
-from pyramid.httpexceptions import HTTPForbidden
-
-from voteit.feed.interfaces import IFeedHandler
 
 
 class FeedViewTests(unittest.TestCase):
@@ -83,15 +80,6 @@ class FeedViewTests(unittest.TestCase):
         self.assertEqual(res.status, '302 Found')
         self.assertEqual(res.location, 'http://example.com/m/')
         self.assertEqual(root['m'].get_field_value('rss_feed'), False)
-
-    def test_rss_settings_post_with_ajax(self):
-        root = self._fixture()
-        request = testing.DummyRequest(post = {'save': 'save', '__formid__': 'deform'},
-                                       is_xhr = True)
-        obj = self._cut(root['m'], request)
-        res = obj.rss_settings()
-        self.assertEqual(res.headers['X-Relocate'], 'http://example.com/m/')
-        self.assertEqual(root['m'].get_field_value('rss_feed'), False)
         
     def test_rss_settings_cancel(self):
         self.config.include('voteit.core.models.flash_messages')
@@ -102,12 +90,6 @@ class FeedViewTests(unittest.TestCase):
         obj = self._cut(root['m'], request)
         res = obj.rss_settings()
         self.assertEqual(res.status, '302 Found')
-        # and with ajax
-        request = testing.DummyRequest(post = postdata,
-                                       is_xhr = True)
-        obj = self._cut(root['m'], request)
-        res = obj.rss_settings()
-        self.assertEqual(res.headers['X-Relocate'], 'http://example.com/m/')
 
 
 class FeedViewComponentTests(unittest.TestCase):

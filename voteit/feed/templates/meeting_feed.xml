@@ -6,7 +6,7 @@
 		<title>${api.context.title}</title>
 		<link>${api.resource_url(api.context, api.request)}</link>
 		<description></description>
-		<atom:link href="${api.resource_url(api.context, api.request)}feed" rel="self" type="application/rss+xml" />
+		<atom:link href="${request.resource_url(api.context)}feed" rel="self" type="application/rss+xml" />
 		<tal:iterate condition="not closed and active" repeat="entry entries">
 	    <item tal:define="url get_url(entry)">
 			<title>${entry.message}</title>
@@ -17,9 +17,9 @@
 		</tal:iterate>
 		<item tal:condition="not (not closed and active)">
 			<title>${feed_not_active_notice}</title>
-			<link>${api.resource_url(api.context, api.request)}</link>
+			<link>${request.resource_url(api.context)}</link>
 			<pubDate>${format_date(api.dt_util.utcnow())}</pubDate>
-			<guid>${api.resource_url(api.context, api.request)}</guid>
+			<guid>${request.resource_url(api.context)}</guid>
 		</item>
 	</channel>
 </rss>

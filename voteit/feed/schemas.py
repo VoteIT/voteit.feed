@@ -1,5 +1,4 @@
 import colander
-import deform
 from betahaus.pyracont.decorators import schema_factory
 
 from voteit.feed import FeedMF as _

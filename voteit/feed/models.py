@@ -19,6 +19,7 @@ class FeedHandler(object):
         All methods are documented in the interface of this class.
     """
     implements(IFeedHandler)
+    adapts(IMeeting)
     
     def __init__(self, context):
         self.context = context
