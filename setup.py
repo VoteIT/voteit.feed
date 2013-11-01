@@ -14,7 +14,7 @@ requires = [
     'betahaus.viewcomponent',
     'Babel',
     'lingua',
-    'colander==0.9.5',
+    'colander',
     'deform',
     ]
 
