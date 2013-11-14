@@ -73,7 +73,8 @@ class FeedViewTests(unittest.TestCase):
 
     def test_rss_settings_post_without_ajax(self):
         root = self._fixture()
-        request = testing.DummyRequest(post = {'save': 'save', '__formid__': 'deform'},
+        request = testing.DummyRequest(post = {'save': 'save', '__formid__': 'deform',
+                                               'csrf_token': '0123456789012345678901234567890123456789'},
                                        is_xhr = False)
         obj = self._cut(root['m'], request)
         res = obj.rss_settings()
