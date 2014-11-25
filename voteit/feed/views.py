@@ -29,7 +29,7 @@ class FeedView(BaseView):
     @view_config(context=IMeeting, name='feed', permission=NO_PERMISSION_REQUIRED)
     def feed(self):
         """ Renders a rss feed for the meeting """
-        return Response(render("templates/meeting_feed.xml", self._get_feed(), request = self.request), content_type='application/rss+xml') 
+        return Response(render("templates/meeting_feed.pt", self._get_feed(), request = self.request), content_type='application/rss+xml') 
     
     @view_config(context=IMeeting, name='framefeed', renderer="templates/meeting_framefeed.pt", permission=NO_PERMISSION_REQUIRED)
     def framefeed(self):
