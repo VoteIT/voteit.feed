@@ -46,7 +46,8 @@ def create_feed_object(request):
     items = get_feed_items(request, type_names, limit=limit)
     # Create feed entries
     for obj in items:
-        fe = fg.add_entry()
+        # Newest first is already the case in items
+        fe = fg.add_entry(order='append')
         author_txt = request.creators_info(obj.creator, portrait=False, no_tag=True)
         # Needed?
         fe.id(request.resource_url(obj))
