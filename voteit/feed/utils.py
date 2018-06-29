@@ -71,7 +71,7 @@ def create_feed_object(request):
 def get_feed_items(request, type_names, limit=50):
     query = Any('type_name', type_names) & \
             Eq('path', resource_path(request.meeting))
-    docids = request.root.catalog.query(query, sort_index='created')[1]
+    docids = request.root.catalog.query(query, sort_index='created', reverse=True)[1]
     # We need to exclude entries within a private agenda item
     # Since resolve docids returns a generator this shouldn't cause too much performance problems.
     items = []
