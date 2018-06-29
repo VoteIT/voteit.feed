@@ -6,6 +6,5 @@ Feeds for VoteIT
 
 This package adds RSS feeds from within meetings, if enabled.
 
-Simply add it to the plugins section in your paster.ini file to enalbe it.
-Within each meeting, a menu item to enable RSS will appear.
-
+The package needs to be added to your paster config file (usually production.ini),
+then simply enable it within the control panel in the meeting.

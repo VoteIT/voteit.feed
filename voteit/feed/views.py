@@ -1,134 +1,100 @@
-import pytz
+# -*- coding: utf-8 -*-
+import os
 
-from deform import Form
-from deform import ValidationFailure
-from betahaus.viewcomponent import view_action
-from betahaus.pyracont.factories import createSchema
-from pyramid.renderers import render
-from pyramid.response import Response
+from arche.views.base import BaseView, DefaultEditForm
+from pyramid.response import FileResponse
 from pyramid.security import NO_PERMISSION_REQUIRED
-from pyramid.traversal import find_resource
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
-
-from voteit.core import fanstaticlib
+from pyramid.httpexceptions import HTTPForbidden
+from pyramid.httpexceptions import HTTPNotFound
 from voteit.core import security
 from voteit.core.models.interfaces import IMeeting
-from voteit.core.schemas.common import add_csrf_token
-from voteit.core.models.schemas import button_save
-from voteit.core.models.schemas import button_cancel
-from voteit.core.views.base_view import BaseView
+from voteit.core.views.control_panel import control_panel_category
+from voteit.core.views.control_panel import control_panel_link
 
-from voteit.feed import FeedMF as _
-from voteit.feed.fanstaticlib import voteit_feed
-from voteit.feed.models import IFeedHandler
+from voteit.feed import _
+from voteit.feed.interfaces import IFeedSettings
+from voteit.feed.utils import get_meeting_rss_file_name, rss_feed_url
+from voteit.feed.utils import write_rss_file
 
 
-class FeedView(BaseView):
-    
-    @view_config(context=IMeeting, name='feed', permission=NO_PERMISSION_REQUIRED)
-    def feed(self):
-        """ Renders a rss feed for the meeting """
-        return Response(render("templates/meeting_feed.pt", self._get_feed(), request = self.request), content_type='application/rss+xml') 
-    
-    @view_config(context=IMeeting, name='framefeed', renderer="templates/meeting_framefeed.pt", permission=NO_PERMISSION_REQUIRED)
-    def framefeed(self):
-        """ Renders a html feed for the meeting """
-        voteit_feed.need()
-        return self._get_feed()
-          
-    def _get_feed(self):
-        ''' Makes a respone dict for renderers '''
-        def _get_url(entry):
-            """ If something stored in the database is deleted,
-                the query won't return any object since that UID won't exist.
-            """
-            brains = self.api.get_metadata_for_query(uid=entry.context_uid)
-            if brains:
-                resource = find_resource(self.api.root, brains[0]['path'])
-                return self.request.resource_url(resource)
-            return self.request.resource_url(self.api.meeting)
-        
-        # Borrowed from PyRSS2Gen, thanks for this workaround
-        def _format_date(dt):
-            """convert a datetime into an RFC 822 formatted date
-        
-            Input date must be in GMT.
-            """
-            # Looks like:
-            #   Sat, 07 Sep 2002 00:00:01 GMT
-            # Can't use strftime because that's locale dependent
-            #
-            # Isn't there a standard way to do this for Python?  The
-            # rfc822 and email.Utils modules assume a timestamp.  The
-            # following is based on the rfc822 module.
-            tz = pytz.timezone('GMT')
-            dt = tz.normalize(dt.astimezone(tz))
-            return "%s, %02d %s %04d %02d:%02d:%02d GMT" % (
-                    ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][dt.weekday()],
-                    dt.day,
-                    ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][dt.month-1],
-                    dt.year, dt.hour, dt.minute, dt.second)
+@view_config(context = IMeeting,
+             name = "meeting_feed.rss",
+             permission = NO_PERMISSION_REQUIRED)
+class MeetingRSSFeedView(BaseView):
 
-        feed_handler = self.request.registry.getAdapter(self.context, IFeedHandler)
-        self.response['entries'] = feed_handler.feed_storage.values()
-        self.response['format_date'] = _format_date
-        self.response['active'] = self.context.get_field_value('rss_feed', False)
-        self.response['feed_not_active_notice'] = self.api.translate(_(u"This RSS-feed isn't enabled."))
-        # only show entries when meeting is ongoing
-        self.response['closed'] = self.context.get_workflow_state() == 'closed'
-        self.response['get_url'] = _get_url
-        return self.response
-    
-    @view_config(context=IMeeting, name="rss_settings", renderer="voteit.core.views:templates/base_edit.pt", permission=security.EDIT)
-    def rss_settings(self):
-        schema = createSchema("RssSettingsMeetingSchema")
-        add_csrf_token(self.context, self.request, schema)
-        schema = schema.bind(context=self.context, request=self.request, api = self.api)
-        form = Form(schema, buttons=(button_save, button_cancel))
-        self.api.register_form_resources(form)
-        fanstaticlib.jquery_form.need()
+    def __call__(self):
+        settings = IFeedSettings(self.context)
+        if not settings.get('enable_rss'):
+            raise HTTPForbidden("RSS feeds not enabled")
+        token = settings.get('link_token')
+        if token and token != self.request.GET.get('t', object()):
+            raise HTTPNotFound("RSS URL doesn't match")
+        rss_file_name = get_meeting_rss_file_name(self.request)
+        if not os.path.isfile(rss_file_name):
+            raise HTTPNotFound("No entries")
+        return FileResponse(rss_file_name, content_type='application/rss+xml')
 
-        post = self.request.POST
-        if 'save' in post:
-            controls = post.items()
-            try:
-                appstruct = form.validate(controls)
-            except ValidationFailure, e:
-                self.response['form'] = e.render()
-                return self.response
-            self.context.set_field_appstruct(appstruct)
-            url = self.request.resource_url(self.context)
-            return HTTPFound(location=url)
-        if 'cancel' in post:
-            self.api.flash_messages.add(_(u"Canceled"))
-            url = self.request.resource_url(self.context)
-            return HTTPFound(location=url)
-        #No action - Render form
-        appstruct = self.context.get_field_appstruct(schema)
-        self.response['form'] = form.render(appstruct)
-        return self.response
 
-@view_action('settings_menu', 'rss_settings', title = _(u"RSS settings"), link = "rss_settings", permission = security.MODERATE_MEETING)
-def generic_menu_link(context, request, va, **kw):
-    """ This is for simple menu items for the meeting root """
-    api = kw['api']
-    url = "%s%s" % (api.meeting_url, va.kwargs['link'])
-    return """<li><a href="%s">%s</a></li>""" % (url, api.translate(va.title))
-    
-@view_action('meeting', 'feed', title = _(u"RSS feed"), link = "feed", )
-def feed_menu_link(context, request, va, **kw):
-    """ This is for simple menu items for the meeting root """
-    api = kw['api']
-    url = request.resource_url(api.meeting, va.kwargs['link'])
-    if api.meeting.get_field_value('rss_feed', False):
-        return """<li><a href="%s">%s</a></li>""" % (url, api.translate(va.title))
-    return '' # pragma : no coverage
+@view_config(context = IMeeting,
+             name = "feed_settings_form",
+             renderer = "arche:templates/form.pt",
+             permission = security.MODERATE_MEETING)
+class ProposalSettingsForm(DefaultEditForm):
+    type_name = 'Feed'
+    schema_name = 'settings'
+    title = _("Feed settings")
 
-@view_action('head', 'feed')
-def feed_head_link(context, request, va, **kw):
-    api = kw['api']
-    if api.meeting and api.meeting.get_field_value('rss_feed', False): 
-        return '<link rel="alternate" type="application/rss+xml" title="%s" href="%sfeed">' %  (api.meeting.title, request.resource_url(api.meeting))
-    return '' # pragma : no coverage
+    @property
+    def feed_settings(self):
+        return IFeedSettings(self.context)
+
+    def appstruct(self):
+        return dict(self.feed_settings)
+
+    def save_success(self, appstruct):
+        if dict(self.feed_settings) != appstruct:
+            self.feed_settings.clear()
+            self.feed_settings.update(appstruct)
+        if appstruct['enable_rss']:
+            # Rewriting this every time settings change is a good idea
+            write_rss_file(self.request)
+        return HTTPFound(location=self.request.resource_url(self.context))
+
+
+def feeds_enabled(context, request, va):
+    settings = IFeedSettings(request.meeting, {})
+    return bool(settings.get('enable_rss', False))
+
+
+def rss_feed_link(context, request, va, **kw):
+    settings = IFeedSettings(request.meeting, {})
+    if settings.get('enable_rss', False):
+        link_token = settings.get('link_token', None)
+        return """<a href="%s">%s</a>""" % (
+            rss_feed_url(request, token=link_token),
+            request.localizer.translate(va.title)
+        )
+
+
+def includeme(config):
+    config.scan(__name__)
+    config.add_view_action(
+        control_panel_category,
+        'control_panel', 'feed',
+        panel_group='control_panel_feed',
+        title=_("RSS Feeds"),
+        check_active=feeds_enabled,
+    )
+    config.add_view_action(
+        control_panel_link,
+        'control_panel_feed', 'settings',
+        title=_("Settings"),
+        view_name='feed_settings_form',
+    )
+    config.add_view_action(
+        rss_feed_link,
+        'control_panel_feed', 'link_to_feed',
+        title=_("Link to RSS feed"),
+    )

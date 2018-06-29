@@ -1,14 +1,56 @@
+# -*- coding: utf-8 -*-
+from uuid import uuid4
+
 import colander
-from betahaus.pyracont.decorators import schema_factory
+import deform
 
-from voteit.feed import FeedMF as _
+from voteit.feed import _
 
 
-@schema_factory('RssSettingsMeetingSchema', title = _(u"RSS settings"))
-class RssSettingsMeetingSchema(colander.MappingSchema):
-    rss_feed = colander.SchemaNode(colander.Boolean(),
-        title = _(u"Activate RSS feed"),
-        description = _(u"rss_feed_checkbox_description",
-                        default=u"When the checkbox below is checked your meeting will be able to show a public RSS feed that can be followed with a RSS reader. This feed will contain info about when changes are made in the meeting and who did the changes. You can access the feed on: 'The meeting URL' + '/feed'. This should be something like 'www.yourdomain.com/yourmeetingname/feed'. If you want the feed to show up in an iframe you can use '/framefeed' instead. This is an advanced feature and read more about it in the manual on wiki.voteit.se. Please note a word of warning: the feed is public for all who can figure it out."),
-        default = False,
+RSS_TYPES = (
+    ("Proposal", _("Proposal")),
+    ("DiscussionPost", _("Discussion post")),
+    ("Poll", _("Poll")),
+)
+
+
+class FeedSettingsSchema(colander.Schema):
+    enable_rss = colander.SchemaNode(
+        colander.Bool(),
+        title = _("Enalbe RSS feeds"),
     )
+    link_token = colander.SchemaNode(
+        colander.String(),
+        title = _("Add token to link"),
+        description=_("Adds the following token to the link to make it impossible to guess. "),
+        default=str(uuid4()),
+        missing="",
+    )
+    type_names = colander.SchemaNode(
+        colander.Set(),
+        title=_("Include the following types"),
+        widget=deform.widget.CheckboxChoiceWidget(values=RSS_TYPES),
+        validator=colander.ContainsOnly([x[0] for x in RSS_TYPES])
+    )
+    limit = colander.SchemaNode(
+        colander.Int(),
+        title=_("Limit to a maximum number of items"),
+        default=50,
+        validator=colander.Range(min=5, max=200),
+    )
+    description_text = colander.SchemaNode(
+        colander.String(),
+        title = _("Description text for RSS feed"),
+        description=_("Only visible within the feed"),
+        default=_("An RSS feed this VoteIT meeting"),
+    )
+
+    def validator(self, form, value):
+        if value["enable_rss"] and not len(value['type_names']):
+            exc = colander.Invalid(form, _("Types missing"))
+            exc["type_names"] = _("If RSS is enabled, you need to pick content types to add to the feed.")
+            raise exc
+
+
+def includeme(config):
+    config.add_schema('Feed', FeedSettingsSchema, 'settings')

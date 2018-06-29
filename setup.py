@@ -7,20 +7,13 @@ README = open(os.path.join(here, 'README.rst')).read()
 CHANGES = open(os.path.join(here, 'CHANGES.rst')).read()
 
 requires = [
-    'pyramid',
-    'pyramid_debugtoolbar',
     'voteit.core',
-    'betahaus.pyracont',
-    'betahaus.viewcomponent',
-    'Babel',
-    'lingua',
-    'colander',
-    'deform',
+    'feedgen',
     ]
 
 setup(name='voteit.feed',
       version='0.1dev',
-      description='Feeds for VoteIT',
+      description='RSS feeds for VoteIT',
       long_description=README + '\n\n' +  CHANGES,
       classifiers=[
         "Programming Language :: Python",
@@ -39,12 +32,5 @@ setup(name='voteit.feed',
       tests_require= requires,
       test_suite="voteit.feed",
       entry_points = """\
-      [fanstatic.libraries]
-      voteit_feed_lib = voteit.feed.fanstaticlib:voteit_feed_lib
       """,
-      message_extractors = { '.': [
-              ('**.py',   'lingua_python', None ),
-              ('**.pt',   'lingua_xml', None ),
-              ('**.zcml', 'lingua_zcml', None ),
-              ]},
       )

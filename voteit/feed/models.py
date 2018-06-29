@@ -1,65 +1,58 @@
-from zope.component import adapts
-from zope.interface import implements
-from persistent import Persistent
-from BTrees.LOBTree import LOBTree
-from betahaus.pyracont.decorators import content_factory
-from betahaus.pyracont.factories import createContent
-
+# -*- coding: utf-8 -*-
+from arche.interfaces import IObjectAddedEvent
+from arche.interfaces import IObjectUpdatedEvent
+from arche.interfaces import IObjectWillBeRemovedEvent
+from arche.utils import AttributeAnnotations
+from pyramid.interfaces import INewResponse
+from pyramid.threadlocal import get_current_request
+from voteit.core.interfaces import IWorkflowStateChange
+from voteit.core.models.interfaces import IAgendaItem
+from voteit.core.models.interfaces import IDiscussionPost
 from voteit.core.models.interfaces import IMeeting
-from voteit.core.models.date_time_util import utcnow
+from voteit.core.models.interfaces import IPoll
+from voteit.core.models.interfaces import IProposal
+from zope.component import adapter
+from zope.interface import implementer
 
-from voteit.feed.interfaces import IFeedHandler
-from voteit.feed.interfaces import IFeedEntry
-from voteit.feed import FeedMF as _
-
-
-class FeedHandler(object):
-    """ An adapter for IMeeting that handle feed entries.
-        See :mod:`voteit.core.models.interfaces.IFeedHandler`.
-        All methods are documented in the interface of this class.
-    """
-    implements(IFeedHandler)
-    adapts(IMeeting)
-    
-    def __init__(self, context):
-        self.context = context
-    
-    @property
-    def feed_storage(self):
-        #Note: Syntax here is optimised for speed.
-        try:
-            return self.context.__feed_storage__
-        except AttributeError:
-            self.context.__feed_storage__ = LOBTree()
-            return self.context.__feed_storage__
-    
-    def _next_free_key(self):
-        try:
-            return self.feed_storage.maxKey()+1
-        except ValueError: #Emptry tree
-            return 0
-    
-    def add(self, context_uid, message, tags=(), context=None):
-        obj = createContent('FeedEntry', context_uid, message, tags=tags)
-        
-        for i in range(10):
-            k = self._next_free_key()
-            if self.feed_storage.insert(k, obj):
-                return
-        
-        raise KeyError("Couln't find a free key for feed handler after 10 retries.") # pragma : no cover
+from voteit.feed.interfaces import IFeedSettings
+from voteit.feed.utils import write_rss_file
 
 
-@content_factory('FeedEntry', title=_(u"Feed entry"))
-class FeedEntry(Persistent):
-    """ FeedEntry lightweight content type.
-        See :mod:`voteit.core.models.interfaces.IFeedEntry`.
-        All methods are documented in the interface of this class.
-    """
-    implements(IFeedEntry)
+@adapter(IMeeting)
+@implementer(IFeedSettings)
+class FeedSettings(AttributeAnnotations, object):
+    attr_name = '_voteit_feed_settings'
 
-    def __init__(self, context_uid, message, tags=()):
-        self.created = utcnow()
-        self.context_uid = context_uid
-        self.message = message
-        self.tags = tuple(tags)
+
+# Cases when RSS feed needs an update:
+# - Added, deleted, modified posts
+# - Workflow changes for Agenda Items and for Polls
+
+
+def mark_need_for_rewrite(*args):
+    request = get_current_request()
+    if not hasattr(request, '_maybe_write_new_feed'):
+        request._maybe_write_new_feed = True
+
+
+def check_ai_state_change(context, event):
+    if event.old_state == 'private' or event.new_state == 'private':
+        mark_need_for_rewrite()
+
+
+def maybe_rewrite_rss(event):
+    request = event.request
+    if getattr(request, 'exception', None) is None and hasattr(request, '_maybe_write_new_feed'):
+        settings = IFeedSettings(request.meeting, {})
+        if settings.get('enable_rss'):
+            write_rss_file(request)
+
+
+def includeme(config):
+    config.registry.registerAdapter(FeedSettings)
+    for content_iface in (IPoll, IProposal, IDiscussionPost):
+        for event_iface in (IObjectUpdatedEvent, IObjectAddedEvent, IObjectWillBeRemovedEvent):
+            config.add_subscriber(mark_need_for_rewrite, [content_iface, event_iface])
+    # FIXME: IWorkflowStateChange may disappear when WF is rewritten in VoteIT
+    config.add_subscriber(check_ai_state_change, [IAgendaItem, IWorkflowStateChange])
+    config.add_subscriber(maybe_rewrite_rss, INewResponse)
