@@ -14,6 +14,12 @@ RSS_TYPES = (
 )
 
 
+@colander.deferred
+def default_feed_description(node, kw):
+    request = kw['request']
+    return request.localizer.translate(_("An RSS feed this meeting"))
+
+
 class FeedSettingsSchema(colander.Schema):
     enable_rss = colander.SchemaNode(
         colander.Bool(),
@@ -42,7 +48,7 @@ class FeedSettingsSchema(colander.Schema):
         colander.String(),
         title = _("Description text for RSS feed"),
         description=_("Only visible within the feed"),
-        default=_("An RSS feed this meeting"),
+        default=default_feed_description,
     )
 
     def validator(self, form, value):
