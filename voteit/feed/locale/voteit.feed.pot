@@ -1,87 +1,104 @@
-# Translations template for voteit.feed.
-# Copyright (C) 2012 ORGANIZATION
-# This file is distributed under the same license as the voteit.feed project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
+# SOME DESCRIPTIVE TITLE
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: voteit.feed 0.1dev\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-04-24 11:47+0200\n"
+"Project-Id-Version: PACKAGE 1.0\n"
+"POT-Creation-Date: 2018-06-29 15:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 0.9.6\n"
+"Generated-By: Lingua 4.13\n"
 
-#: voteit/feed/models.py:51
-msgid "Feed entry"
+#: ./voteit/feed/schemas.py:11
+msgid "Proposal"
 msgstr ""
 
-#: voteit/feed/schemas.py:15
-msgid "Activate RSS feed"
+#: ./voteit/feed/schemas.py:12
+msgid "Discussion post"
 msgstr ""
 
-#. Default: When the checkbox below is checked your meeting will be able to show a
-#. public RSS feed that can be followed with a RSS reader. This feed will contain
-#. info about when changes are made in the meeting and who did the changes. You can
-#. access the feed on: 'The meeting URL' + '/feed'. This should be something like
-#. 'www.yourdomain.com/yourmeetingname/feed'. If you want the feed to show up in an
-#. iframe you can use '/framefeed' instead. This is an advanced feature and read
-#. more about it in the manual on wiki.voteit.se. Please note a word of warning:
-#. the feed is public for all who can figure it out.
-#: voteit/feed/schemas.py:16
-msgid "rss_feed_checkbox_description"
+#: ./voteit/feed/schemas.py:13
+msgid "Poll"
 msgstr ""
 
-#: voteit/feed/schemas.py:22 voteit/feed/views.py:129
-msgid "RSS settings"
+#: ./voteit/feed/schemas.py:20
+msgid "Enalbe RSS feeds"
 msgstr ""
 
-#: voteit/feed/subscribers.py:33
-msgid "${userid} has written a post in ${agenda_item}."
+#: ./voteit/feed/schemas.py:24
+msgid "Add token to link"
 msgstr ""
 
-#: voteit/feed/subscribers.py:52
-msgid "${userid} has made a proposal in ${agenda_item}."
+#: ./voteit/feed/schemas.py:25
+msgid "Adds the following token to the link to make it impossible to guess."
 msgstr ""
 
-#: voteit/feed/subscribers.py:72
-msgid "A poll has started in ${agenda_item}, vote now!"
+#: ./voteit/feed/schemas.py:31
+msgid "Include the following types"
 msgstr ""
 
-#: voteit/feed/subscribers.py:75
-msgid "The result of a poll in ${agenda_item} is set."
+#: ./voteit/feed/schemas.py:37
+msgid "Limit to a maximum number of items"
 msgstr ""
 
-#: voteit/feed/subscribers.py:92
-msgid "${agenda_item} has been added to the agenda."
+#: ./voteit/feed/schemas.py:43
+msgid "Description text for RSS feed"
 msgstr ""
 
-#: voteit/feed/subscribers.py:95
-msgid "${agenda_item} has been set to ongoing."
+#: ./voteit/feed/schemas.py:44
+msgid "Only visible within the feed"
 msgstr ""
 
-#: voteit/feed/subscribers.py:98
-msgid "${agenda_item} has been closed."
+#: ./voteit/feed/schemas.py:45
+msgid "An RSS feed this meeting"
 msgstr ""
 
-#: voteit/feed/views.py:81
-msgid "This RSS-feed isn't enabled."
+#: ./voteit/feed/schemas.py:50
+msgid "Types missing"
 msgstr ""
 
-#: voteit/feed/views.py:117
-msgid "Canceled"
+#: ./voteit/feed/schemas.py:51
+msgid "If RSS is enabled, you need to pick content types to add to the feed."
 msgstr ""
 
-#: voteit/feed/views.py:137
-msgid "RSS feed"
+#: ./voteit/feed/utils.py:34
+msgid "No description"
 msgstr ""
 
-#: voteit/feed/templates/meeting_framefeed.pt:24
-msgid "Feed not active"
+#: ./voteit/feed/utils.py:54
+#, python-format
+msgid "${state} poll: ${title}"
 msgstr ""
 
+#: ./voteit/feed/utils.py:59
+#, python-format
+msgid "Discussion post by ${name}"
+msgstr ""
+
+#: ./voteit/feed/utils.py:63
+#, python-format
+msgid "Proposal by ${name}"
+msgstr ""
+
+#: ./voteit/feed/views.py:47
+msgid "Feed settings"
+msgstr ""
+
+#: ./voteit/feed/views.py:87
+msgid "RSS Feeds"
+msgstr ""
+
+#: ./voteit/feed/views.py:93
+msgid "Settings"
+msgstr ""
+
+#: ./voteit/feed/views.py:99
+msgid "Link to RSS feed"
+msgstr ""

@@ -8,89 +8,137 @@ msgid ""
 msgstr ""
 "Project-Id-Version: voteit.feed 0.1dev\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-04-24 11:47+0200\n"
-"PO-Revision-Date: 2012-04-24 11:52+0100\n"
+"POT-Creation-Date: 2018-06-29 15:44+0200\n"
+"PO-Revision-Date: 2018-06-29 15:47+0200\n"
 "Last-Translator: Fredrik Nilson <fredrik@betahaus.net>\n"
 "Language-Team: se <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Language: sv\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 0.9.6\n"
+"X-Generator: Poedit 1.8.6\n"
 
-#: voteit/feed/models.py:51
-msgid "Feed entry"
-msgstr "Flödespost"
+#: voteit/feed/schemas.py:11
+msgid "Proposal"
+msgstr "Förslag"
 
-#: voteit/feed/schemas.py:15
-msgid "Activate RSS feed"
-msgstr "Aktivera RSS-feed"
+#: voteit/feed/schemas.py:12
+msgid "Discussion post"
+msgstr "Diskussionsinlägg"
 
-#. Default: When the checkbox below is checked your meeting will be able to
-#. show a
-#. public RSS feed that can be followed with a RSS reader. This feed will
-#. contain
-#. info about when changes are made in the meeting and who did the changes. You
-#. can
-#. access the feed on: 'The meeting URL' + '/feed'. This should be something
-#. like
-#. 'www.yourdomain.com/yourmeetingname/feed'. If you want the feed to show up
-#. in an
-#. iframe you can use '/framefeed' instead. This is an advanced feature and
-#. read
-#. more about it in the manual on wiki.voteit.se. Please note a word of
-#. warning:
-#. the feed is public for all who can figure it out.
-#: voteit/feed/schemas.py:16
-msgid "rss_feed_checkbox_description"
-msgstr "När kryssrutan nedan markeras kan ditt möte följas med i en offentlig RSS feed som kan följas med en RSS-läsare. Feeden kommer innehålla information om förändringar i mötet och vem som gjorde dem. Du når feeden på: 'Mötets URL' + '/feed'. Detta borde bli något i stil med 'www.dindomänförvoteit.se/dittmötesnamn/feed'. Om du vill att feeden ska kunna visas i en iframe kan du använda '/framefeed' istället. Detta är en avancerad funktion, läs mer om den i manualen på wiki.voteit.se. Vänligen notera ett varningens ord: RSS-feeden är offentlig för alla som kan klura ut den så använd funktionen med försiktighet."
+#: voteit/feed/schemas.py:13
+msgid "Poll"
+msgstr "Omröstning"
 
-#: voteit/feed/schemas.py:22
-#: voteit/feed/views.py:129
-msgid "RSS settings"
-msgstr "RSS-inställningar"
+#: voteit/feed/schemas.py:20
+msgid "Enalbe RSS feeds"
+msgstr "Aktivera RSS-flöde"
 
-#: voteit/feed/subscribers.py:33
-msgid "${userid} has written a post in ${agenda_item}."
-msgstr "${userid} har skrivit ett inlägg i ${agenda_item}"
+#: voteit/feed/schemas.py:24
+msgid "Add token to link"
+msgstr "Lägg till token till länk"
 
-#: voteit/feed/subscribers.py:52
-msgid "${userid} has made a proposal in ${agenda_item}."
-msgstr "${userid} har lagt ett förslag i ${agenda_item}"
+#: voteit/feed/schemas.py:25
+msgid "Adds the following token to the link to make it impossible to guess."
+msgstr "Lägger till följande token till länken så den inte går att gissa."
 
-#: voteit/feed/subscribers.py:72
-msgid "A poll has started in ${agenda_item}, vote now!"
-msgstr "En omröstning har startat i ${agenda_item}, rösta nu!"
+#: voteit/feed/schemas.py:31
+msgid "Include the following types"
+msgstr "Inkludera följande typer"
 
-#: voteit/feed/subscribers.py:75
-msgid "The result of a poll in ${agenda_item} is set."
-msgstr "Resultatet av en omröstning i ${agenda_item} är klart."
+#: voteit/feed/schemas.py:37
+msgid "Limit to a maximum number of items"
+msgstr "Begränsa till maxantal objekt"
 
-#: voteit/feed/subscribers.py:92
-msgid "${agenda_item} has been added to the agenda."
-msgstr "${agenda_item} har lagts till i dagordningen."
+#: voteit/feed/schemas.py:43
+msgid "Description text for RSS feed"
+msgstr "Beskrivningstext för RSS-flödet"
 
-#: voteit/feed/subscribers.py:95
-msgid "${agenda_item} has been set to ongoing."
-msgstr "${agenda_item} är nu pågående."
+#: voteit/feed/schemas.py:44
+msgid "Only visible within the feed"
+msgstr "Bara synligt i flödet"
 
-#: voteit/feed/subscribers.py:98
-msgid "${agenda_item} has been closed."
-msgstr "${agenda_item} har avslutats."
+#: voteit/feed/schemas.py:45
+msgid "An RSS feed this meeting"
+msgstr "Ett RSS-flöde för mötet"
 
-#: voteit/feed/views.py:81
-msgid "This RSS-feed isn't enabled."
-msgstr "Detta RSS-flöde är inte påslaget."
+#: voteit/feed/schemas.py:50
+msgid "Types missing"
+msgstr "Typer saknas"
 
-#: voteit/feed/views.py:117
-msgid "Canceled"
-msgstr "Avbruten"
+#: voteit/feed/schemas.py:51
+msgid "If RSS is enabled, you need to pick content types to add to the feed."
+msgstr "Om RSS är påslaget så måste du välja innehållstyper att ha med i flödet."
 
-#: voteit/feed/views.py:137
-msgid "RSS feed"
-msgstr "RSS-flöde"
+#: voteit/feed/utils.py:34
+msgid "No description"
+msgstr "Ingen beskrivning"
 
-#: voteit/feed/templates/meeting_framefeed.pt:24
-msgid "Feed not active"
-msgstr "Feeden är inte aktiv"
+#: voteit/feed/utils.py:54
+#, python-format
+msgid "${state} poll: ${title}"
+msgstr "${state} omröstning: ${title}"
 
+#: voteit/feed/utils.py:59
+#, python-format
+msgid "Discussion post by ${name}"
+msgstr "Diskussionsinlägg av ${name}"
+
+#: voteit/feed/utils.py:63
+#, python-format
+msgid "Proposal by ${name}"
+msgstr "Förslag av ${name}"
+
+#: voteit/feed/views.py:47
+msgid "Feed settings"
+msgstr "Flödesinställningar"
+
+#: voteit/feed/views.py:87
+msgid "RSS Feeds"
+msgstr "RSS-flöden"
+
+#: voteit/feed/views.py:93
+msgid "Settings"
+msgstr "Inställningar"
+
+#: voteit/feed/views.py:99
+msgid "Link to RSS feed"
+msgstr "Länk till RSS-flöde"
+
+#~ msgid "Feed entry"
+#~ msgstr "Flödespost"
+
+#~ msgid "rss_feed_checkbox_description"
+#~ msgstr "När kryssrutan nedan markeras kan ditt möte följas med i en offentlig RSS feed som kan följas med en RSS-läsare. Feeden kommer innehålla information om förändringar i mötet och vem som gjorde dem. Du når feeden på: 'Mötets URL' + '/feed'. Detta borde bli något i stil med 'www.dindomänförvoteit.se/dittmötesnamn/feed'. Om du vill att feeden ska kunna visas i en iframe kan du använda '/framefeed' istället. Detta är en avancerad funktion, läs mer om den i manualen på wiki.voteit.se. Vänligen notera ett varningens ord: RSS-feeden är offentlig för alla som kan klura ut den så använd funktionen med försiktighet."
+
+#~ msgid "${userid} has written a post in ${agenda_item}."
+#~ msgstr "${userid} har skrivit ett inlägg i ${agenda_item}"
+
+#~ msgid "${userid} has made a proposal in ${agenda_item}."
+#~ msgstr "${userid} har lagt ett förslag i ${agenda_item}"
+
+#~ msgid "A poll has started in ${agenda_item}, vote now!"
+#~ msgstr "En omröstning har startat i ${agenda_item}, rösta nu!"
+
+#~ msgid "The result of a poll in ${agenda_item} is set."
+#~ msgstr "Resultatet av en omröstning i ${agenda_item} är klart."
+
+#~ msgid "${agenda_item} has been added to the agenda."
+#~ msgstr "${agenda_item} har lagts till i dagordningen."
+
+#~ msgid "${agenda_item} has been set to ongoing."
+#~ msgstr "${agenda_item} är nu pågående."
+
+#~ msgid "${agenda_item} has been closed."
+#~ msgstr "${agenda_item} har avslutats."
+
+#~ msgid "This RSS-feed isn't enabled."
+#~ msgstr "Detta RSS-flöde är inte påslaget."
+
+#~ msgid "Canceled"
+#~ msgstr "Avbruten"
+
+#~ msgid "Feed not active"
+#~ msgstr "Feeden är inte aktiv"

@@ -22,7 +22,7 @@ class FeedSettingsSchema(colander.Schema):
     link_token = colander.SchemaNode(
         colander.String(),
         title = _("Add token to link"),
-        description=_("Adds the following token to the link to make it impossible to guess. "),
+        description=_("Adds the following token to the link to make it impossible to guess."),
         default=str(uuid4()),
         missing="",
     )
@@ -42,7 +42,7 @@ class FeedSettingsSchema(colander.Schema):
         colander.String(),
         title = _("Description text for RSS feed"),
         description=_("Only visible within the feed"),
-        default=_("An RSS feed this VoteIT meeting"),
+        default=_("An RSS feed this meeting"),
     )
 
     def validator(self, form, value):
