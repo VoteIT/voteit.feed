@@ -4,6 +4,7 @@ import os
 from feedgen.feed import FeedGenerator
 from pyramid.traversal import resource_path
 from repoze.catalog.query import Any, Eq
+from voteit.core import _ as voteit_mf
 
 from voteit.feed.exceptions import FeedDirectoryNotFound
 from voteit.feed.interfaces import IFeedSettings
@@ -53,7 +54,7 @@ def create_feed_object(request):
         fe.id(request.resource_url(obj))
         if obj.type_name == 'Poll':
             fe.title(te(_("${state} poll: ${title}",
-                          mapping={'state': obj.current_state_title(request), 'title': obj.title})))
+                          mapping={'state': te(voteit_mf(obj.current_state_title(request))), 'title': obj.title})))
             fe.content()
             #fe.summary()
         if obj.type_name == 'DiscussionPost':
