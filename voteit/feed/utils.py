@@ -5,6 +5,7 @@ from feedgen.feed import FeedGenerator
 from pyramid.traversal import resource_path
 from repoze.catalog.query import Any, Eq
 from voteit.core import _ as voteit_mf
+from webhelpers.html.converters import nl2br
 
 from voteit.feed.exceptions import FeedDirectoryNotFound
 from voteit.feed.interfaces import IFeedSettings
@@ -24,6 +25,15 @@ def get_meeting_rss_file_name(request):
     fname = "%s.rss" % request.meeting.uid
     file_dir = get_feed_dir(request.registry.settings)
     return os.path.join(file_dir, fname)
+
+
+def _cleanup_txt(txt):
+    items = []
+    for x in txt.splitlines():
+        x = x.strip()
+        if x:
+            items.append(x)
+    return " ".join(items)
 
 
 def create_feed_object(request):
@@ -49,17 +59,18 @@ def create_feed_object(request):
     for obj in items:
         # Newest first is already the case in items
         fe = fg.add_entry(order='append')
-        author_txt = request.creators_info(obj.creator, portrait=False, no_tag=True)
+        author_txt = _cleanup_txt(request.creators_info(obj.creator, portrait=False, no_tag=True))
         # Needed?
         fe.id(request.resource_url(obj))
         if obj.type_name == 'Poll':
             fe.title(te(_("${state} poll: ${title}",
-                          mapping={'state': te(voteit_mf(obj.current_state_title(request))), 'title': obj.title})))
+                          mapping={'state': te(voteit_mf(obj.current_state_title(request))),
+                                   'title': obj.title})))
             fe.content()
             #fe.summary()
         if obj.type_name == 'DiscussionPost':
             fe.title(te(_("Discussion post by ${name}", mapping={'name': author_txt})))
-            fe.content(obj.text)
+            fe.content(nl2br(obj.text))
             #fe.summary()
         if obj.type_name == 'Proposal':
             fe.title(te(_("Proposal by ${name}", mapping={'name': author_txt})))
