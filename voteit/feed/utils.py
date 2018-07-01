@@ -62,6 +62,7 @@ def create_feed_object(request):
         author_txt = _cleanup_txt(request.creators_info(obj.creator, portrait=False, no_tag=True))
         # Needed?
         fe.id(request.resource_url(obj))
+        fe.published(obj.created)
         if obj.type_name == 'Poll':
             fe.title(te(_("${state} poll: ${title}",
                           mapping={'state': te(voteit_mf(obj.current_state_title(request))),
@@ -69,11 +70,11 @@ def create_feed_object(request):
             fe.content()
             #fe.summary()
         if obj.type_name == 'DiscussionPost':
-            fe.title(te(_("Discussion post by ${name}", mapping={'name': author_txt})))
+            fe.title(te(_("${name} added a discussion post", mapping={'name': author_txt})))
             fe.content(nl2br(obj.text))
             #fe.summary()
         if obj.type_name == 'Proposal':
-            fe.title(te(_("Proposal by ${name}", mapping={'name': author_txt})))
+            fe.title(te(_("${name} added a proposal", mapping={'name': author_txt})))
             fe.content(request.render_proposal_text(obj, tag_func=lambda x: x))
             #fe.summary()
         fe.link(href=request.resource_url(obj), rel='alternate')

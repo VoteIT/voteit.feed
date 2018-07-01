@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: voteit.feed 0.1dev\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-06-29 15:44+0200\n"
-"PO-Revision-Date: 2018-06-29 15:47+0200\n"
+"POT-Creation-Date: 2018-07-01 11:22+0200\n"
+"PO-Revision-Date: 2018-07-01 11:23+0200\n"
 "Last-Translator: Fredrik Nilson <fredrik@betahaus.net>\n"
 "Language-Team: se <LL@li.org>\n"
 "Language: sv\n"
@@ -33,63 +33,63 @@ msgid "Poll"
 msgstr "Omröstning"
 
 #: voteit/feed/schemas.py:20
-msgid "Enalbe RSS feeds"
-msgstr "Aktivera RSS-flöde"
-
-#: voteit/feed/schemas.py:24
-msgid "Add token to link"
-msgstr "Lägg till token till länk"
-
-#: voteit/feed/schemas.py:25
-msgid "Adds the following token to the link to make it impossible to guess."
-msgstr "Lägger till följande token till länken så den inte går att gissa."
-
-#: voteit/feed/schemas.py:31
-msgid "Include the following types"
-msgstr "Inkludera följande typer"
-
-#: voteit/feed/schemas.py:37
-msgid "Limit to a maximum number of items"
-msgstr "Begränsa till maxantal objekt"
-
-#: voteit/feed/schemas.py:43
-msgid "Description text for RSS feed"
-msgstr "Beskrivningstext för RSS-flödet"
-
-#: voteit/feed/schemas.py:44
-msgid "Only visible within the feed"
-msgstr "Bara synligt i flödet"
-
-#: voteit/feed/schemas.py:45
 msgid "An RSS feed this meeting"
 msgstr "Ett RSS-flöde för mötet"
 
+#: voteit/feed/schemas.py:26
+msgid "Enalbe RSS feeds"
+msgstr "Aktivera RSS-flöde"
+
+#: voteit/feed/schemas.py:30
+msgid "Add token to link"
+msgstr "Lägg till token till länk"
+
+#: voteit/feed/schemas.py:31
+msgid "Adds the following token to the link to make it impossible to guess."
+msgstr "Lägger till följande token till länken så den inte går att gissa."
+
+#: voteit/feed/schemas.py:37
+msgid "Include the following types"
+msgstr "Inkludera följande typer"
+
+#: voteit/feed/schemas.py:43
+msgid "Limit to a maximum number of items"
+msgstr "Begränsa till maxantal objekt"
+
+#: voteit/feed/schemas.py:49
+msgid "Description text for RSS feed"
+msgstr "Beskrivningstext för RSS-flödet"
+
 #: voteit/feed/schemas.py:50
+msgid "Only visible within the feed"
+msgstr "Bara synligt i flödet"
+
+#: voteit/feed/schemas.py:56
 msgid "Types missing"
 msgstr "Typer saknas"
 
-#: voteit/feed/schemas.py:51
+#: voteit/feed/schemas.py:57
 msgid "If RSS is enabled, you need to pick content types to add to the feed."
 msgstr "Om RSS är påslaget så måste du välja innehållstyper att ha med i flödet."
 
-#: voteit/feed/utils.py:34
+#: voteit/feed/utils.py:45
 msgid "No description"
 msgstr "Ingen beskrivning"
 
-#: voteit/feed/utils.py:54
+#: voteit/feed/utils.py:67
 #, python-format
 msgid "${state} poll: ${title}"
 msgstr "${state} omröstning: ${title}"
 
-#: voteit/feed/utils.py:59
+#: voteit/feed/utils.py:73
 #, python-format
-msgid "Discussion post by ${name}"
-msgstr "Diskussionsinlägg av ${name}"
+msgid "${name} added a discussion post"
+msgstr "${name} la till ett diskussionsinlägg"
 
-#: voteit/feed/utils.py:63
+#: voteit/feed/utils.py:77
 #, python-format
-msgid "Proposal by ${name}"
-msgstr "Förslag av ${name}"
+msgid "${name} added a proposal"
+msgstr "${name} la till ett förslag"
 
 #: voteit/feed/views.py:47
 msgid "Feed settings"
@@ -106,6 +106,12 @@ msgstr "Inställningar"
 #: voteit/feed/views.py:99
 msgid "Link to RSS feed"
 msgstr "Länk till RSS-flöde"
+
+#~ msgid "Discussion post by ${name}"
+#~ msgstr "Diskussionsinlägg av ${name}"
+
+#~ msgid "Proposal by ${name}"
+#~ msgstr "Förslag av ${name}"
 
 #~ msgid "Feed entry"
 #~ msgstr "Flödespost"
